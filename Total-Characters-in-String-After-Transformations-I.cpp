@@ -1,27 +1,44 @@
+// a -> 26, ab
+// b -> 26, bc
+// ...
+// y -> 26, yz
+
+// z -> 1, ab
+// ab -> 24, yz
+// yz -> 1, zab
+// z -> 26, zab
+
 class Solution {
 public:
     int lengthAfterTransformations(string s, int t) {
-        vector<long long>freq(26,0);
-        int modulo=1e9+7;
+        long freq[26]={};
+        int modulo = 1e9 + 7;
 
         for (char ch : s) {
             freq[ch - 'a']++;
         }
 
-        for(int i=0;i<t;i++){
-            vector<long long>newFreq(26,0);
-            for(int j=0;j<25;j++){
-                newFreq[j+1]=(freq[j])% modulo;
+       while(t>=26) {
+            long temp[26]={};
+
+            for (int i = 0; i < 25; ++i) temp[i + 1] += freq[i];
+
+            temp[0]+=freq[25];
+            temp[1]+=freq[25];
+            
+            for(int i=0;i<=25;i++){
+                freq[i]+=temp[i];
+                freq[i]%=modulo;
             }
-            newFreq[0]=(freq[25])%modulo;
-            newFreq[1]=(newFreq[1]+freq[25])%modulo;
-            freq=newFreq;
+            t-=26;
         }
 
-        long long ans=0;
-        for(int i=0;i<26;i++){
-            ans=(ans+freq[i])%modulo;
+        long long ans = 0;
+        for (int i = 0; i < 26; i++) {
+            ans +=freq[i];
+            if(i+t>=26) ans+=freq[i];
+            ans%=modulo;
         }
-        return (int)ans;
+        return ans%modulo;
     }
 };
